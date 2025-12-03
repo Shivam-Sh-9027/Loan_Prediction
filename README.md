@@ -2,10 +2,6 @@
 
 A machine learning-powered Flask web application that predicts loan default risk using a Random Forest classifier.
 
-## 🎥 Demo Video
-
-[![Watch demo video](assets/Screenshot1.png)](assets/demo.mp4)
-
 ## Demo Screenshots
 
 ### 🖥️ Application UI
