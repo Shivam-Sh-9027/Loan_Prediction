@@ -1,85 +1,200 @@
-# Loan_Prediction
+# Loan Default Prediction Application
 
-📊 Loan Default Prediction Project
-This project demonstrates a complete machine learning pipeline for predicting loan defaults using synthetic financial data. It includes data generation, preprocessing, model training, evaluation, and visualization to analyze borrower risk factors.
+A machine learning-powered Flask web application that predicts loan default risk using a Random Forest classifier.
 
-🔧 Key Components
-Dataset: A realistic synthetic dataset of 2,000 borrowers with features such as:
+## 🎥 Demo Video
 
-Age, Income, Loan Amount, Loan Term
+<video width="700" controls>
+  <source src="assets/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
-Credit Score, Employment Duration
+## Demo Screenshots
 
-Prior Default History, Marital Status, Loan Purpose
+### 🖥️ Application UI
 
-Target Variable: default — binary indicator (0 or 1) of whether a borrower will default.
+#### Dashboard
+![Dashboard Screenshot](assets/screenshot1.png)
 
-Modeling: Two classification models trained and evaluated:
+#### Prediction Form
+![Prediction Form](assets/screenshot2.png)
 
-Logistic Regression
+#### Prediction Result
+![Prediction Result](assets/screenshot3.png)
 
-Random Forest Classifier
 
-🛠️ Methodology
-Data Preprocessing:
+## Overview
 
-Categorical variables (marital_status, purpose) encoded using one-hot encoding.
+This application analyzes applicant financial and personal information to predict the likelihood of loan default. It uses a machine learning model trained on synthetic loan data with realistic features and default patterns.
 
-Numerical features standardized using StandardScaler.
+## Features
 
-Train-test split (70%-30%) with stratification on the target.
+- **Interactive Web Interface**: User-friendly forms for loan application input
+- **Real-time Predictions**: Get instant risk assessment with probability scores
+- **Data Visualization**: Jupyter notebook with exploratory data analysis (EDA)
+- **Scalable Architecture**: Modular Flask backend with proper preprocessing pipelines
 
-Model Training:
+## Project Structure
 
-Both models trained on the same training set.
+```
+.
+├── app.py                    # Flask application with model training and prediction logic
+├── Loan_prediction.ipynb     # Jupyter notebook with EDA and model exploration
+├── requirements.txt          # Python dependencies
+├── README.md                 # This file
+└── templates/
+    ├── index.html            # Dashboard home page
+    └── predict.html          # Prediction form and results page
+```
 
-Hyperparameters kept simple for clarity and reproducibility.
+## Installation
 
-Evaluation Metrics:
+### Prerequisites
+- Python 3.7+
+- pip or conda
 
-ROC-AUC Score
+### Setup Steps
 
-Classification Report (Precision, Recall, F1-Score)
+1. Clone or download this repository:
+```bash
+cd /media/shiv/HDD/Project/GITHUB/LOAN_PREDICTION
+```
 
-Confusion Matrix
+2. Create a virtual environment (optional but recommended):
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-ROC Curve
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-Visualizations:
+## Usage
 
-ROC Curve: Compares model performance in terms of true positive vs. false positive rates.
+### Run the Application
 
-Confusion Matrix: Shows prediction accuracy and error types.
+```bash
+python app.py
+```
 
-Credit Score Distribution: Histogram comparing credit scores of defaulters vs. non-defaulters.
+The application will:
+1. Generate a synthetic dataset of 2,000 loan records
+2. Train a Random Forest classifier (200 estimators)
+3. Display training and test accuracy metrics
+4. Launch the Flask server at `http://localhost:5000`
 
-Loan Default Counts: Bar chart showing class balance.
+### Access the Web Interface
 
-Boxplot (by Credit Score Bins): Displays how loan amounts vary across credit score ranges.
+- **Dashboard**: Open `http://localhost:5000` in your browser
+- **Prediction Form**: Navigate to the prediction page to submit applicant information
 
-📈 Key Insight from Boxplot
-The final boxplot groups borrowers into credit score bins (e.g., 300–350, 350–400, ..., 850) to avoid overcrowding from treating credit score as continuous. This reveals:
+### Input Features
 
-Borrowers with higher credit scores tend to take larger loans, but with less variance.
+The model accepts the following applicant information:
 
-Lower credit score groups show wider variation in loan amounts, indicating higher risk dispersion.
+| Feature | Type | Range/Options |
+|---------|------|----------------|
+| **Age** | Integer | 21-70 years |
+| **Annual Income** | Float | $8,000 - $300,000 |
+| **Loan Amount** | Float | $1,000 - $100,000 |
+| **Loan Term** | Integer | 12, 24, 36, 48, 60 months |
+| **Credit Score** | Integer | 300-850 |
+| **Employment Years** | Integer | 0+ years |
+| **Prior Default** | Binary | Yes (1) / No (0) |
+| **Marital Status** | Categorical | Single, Married, Divorced, Widowed |
+| **Loan Purpose** | Categorical | Debt Consolidation, Home Improvement, Education, Car, Other |
 
-✅ Fix Applied: Raw credits_score was binned using pd.cut() to make the boxplot interpretable and visually meaningful.
+### Prediction Output
 
-📂 How to Use
-bash
-python loan_default_prediction.py
-Ensure dependencies are installed:
+- **Risk Classification**: "High Risk - Likely to Default" or "Low Risk - Likely Approved"
+- **Default Probability**: Percentage probability of loan default (0-100%)
 
-bash
-pip install numpy pandas scikit-learn matplotlib
-🎯 Purpose
-This project is ideal for:
+## Model Details
 
-Learning end-to-end ML workflows
+### Algorithm
+- **Model**: Random Forest Classifier
+- **Estimators**: 200 trees
+- **Max Depth**: 10
+- **Test Split**: 30% test, 70% training (stratified)
 
-Credit risk modeling
+### Data Preprocessing
+- **Categorical Encoding**: One-hot encoding for categorical features
+- **Scaling**: StandardScaler for numerical features
 
-Practicing classification and visualization techniques
+### Model Performance
+Typical accuracy metrics:
+- Training Accuracy: ~95%
+- Test Accuracy: ~90%
 
-Demonstrating model evaluation best practices
+### Target Variable Generation
+The loan default probability is calculated based on:
+- Credit score (stronger predictor of default)
+- Debt-to-income ratio
+- Employment history
+- Prior default history
+- Loan purpose and personal characteristics
+
+## Jupyter Notebook
+
+Explore the data and model in `Loan_prediction.ipynb`:
+
+```bash
+jupyter notebook Loan_prediction.ipynb
+```
+
+The notebook includes:
+- Dataset exploration and statistics
+- Feature distributions and correlations
+- Model training and evaluation
+- Confusion matrix and ROC curve analysis
+- Feature importance visualization
+
+## Dependencies
+
+See `requirements.txt` for the complete list:
+- **Flask**: Web framework
+- **NumPy**: Numerical computing
+- **Pandas**: Data manipulation
+- **Matplotlib**: Data visualization
+- **scikit-learn**: Machine learning algorithms and preprocessing
+
+## Troubleshooting
+
+### Port Already in Use
+If port 5000 is in use, modify `app.py`:
+```python
+app.run(debug=True, port=5001)  # Change to a different port
+```
+
+### Module Import Errors
+Ensure all dependencies are installed:
+```bash
+pip install -r requirements.txt --upgrade
+```
+
+### Model Not Training
+Check that the dataset is being created correctly by examining console output during startup.
+
+## Future Enhancements
+
+- [ ] Add data persistence (SQLite/PostgreSQL)
+- [ ] Implement model versioning and A/B testing
+- [ ] Add more advanced features (employment stability, etc.)
+- [ ] Deploy to cloud platform (Heroku, AWS, GCP)
+- [ ] Add authentication and user profiles
+- [ ] Implement SHAP explainability for predictions
+- [ ] Create REST API endpoints
+
+## License
+
+This project is provided as-is for educational and demonstration purposes.
+
+## Contact & Support
+
+For issues or questions, please refer to the project repository or contact the development team.
+
+---
+
+**Last Updated**: December 2025
