@@ -20,8 +20,8 @@ A machine learning-powered Flask web application that predicts loan default risk
 ![Prediction Form](assets/Screenshot2.png)
 
 #### Prediction Result
-![Prediction Result](assets/Screenshot3.png)
-
+![Prediction Result1](assets/Screenshot3.png)
+![Prediction Result2](assets/Screenshot4.png)
 
 ## Overview
 
