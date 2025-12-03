@@ -4,7 +4,7 @@ A machine learning-powered Flask web application that predicts loan default risk
 
 ## 🎥 Demo Video
 
-[![Watch demo video](https://img.youtube.com/vi/MqS59UaSU-I/0.jpg)](https://www.youtube.com/watch?v=MqS59UaSU-I)
+[![Watch demo video](assets/Screenshot1.png)](assets/demo.mp4)
 
 ## Demo Screenshots
 
