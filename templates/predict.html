@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Default Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 {
+            text-align: center;
+            color: black;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+            animation: fadeInDown 0.8s ease 0.2s both;
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            animation: slideIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.4s; }
+        .form-group:nth-child(2) { animation-delay: 0.5s; }
+        .form-group:nth-child(3) { animation-delay: 0.6s; }
+        .form-group:nth-child(4) { animation-delay: 0.7s; }
+        .form-group:nth-child(5) { animation-delay: 0.8s; }
+        .form-group:nth-child(6) { animation-delay: 0.9s; }
+        .form-group:nth-child(7) { animation-delay: 1s; }
+        .form-group:nth-child(8) { animation-delay: 1.1s; }
+        .form-group:nth-child(9) { animation-delay: 1.2s; }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input:hover, select:hover {
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 16px;
+            color: white;
+            width: 100%;
+            margin-top: 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        .result-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: scaleIn 0.6s ease;
+        }
+
+        .result-box h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-box p {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .result-box b {
+            color: #667eea;
+            font-size: 1.3em;
+        }
+
+        .prediction-badge {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+
+        .prediction-approved {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .prediction-denied {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(238, 9, 121, 0.4);
+        }
+
+        .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            animation: bounce 1s ease infinite;
+        }
+
+        /* Popup Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+            animation: fadeIn 0.4s ease forwards;
+            z-index: 9999;
+        }
+
+        .modal-box {
+            background: white;
+            width: 90%;
+            max-width: 480px;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            animation: scaleIn 0.4s ease forwards;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .close-btn {
+            margin-top: 25px;
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #5568d9;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 2em;
+            }
+            
+            form, .result-box {
+                padding: 30px 25px;
+            }
+            
+            body {
+                padding: 20px 15px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🏦 Loan Default Prediction</h2>
+        <p class="subtitle">Enter your details to predict loan approval probability</p>
+        
+        <form method="POST" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <label>👤 Age:</label>
+                <input type="number" name="age" id="age" required min="18" max="100" placeholder="Enter your age">
+            </div>
+
+            <div class="form-group">
+                <label>💰 Annual Income:</label>
+                <input type="number" name="income" id="income" required min="0" placeholder="Enter your annual income">
+            </div>
+
+            <div class="form-group">
+                <label>💵 Loan Amount:</label>
+                <input type="number" name="loan_amount" id="loan_amount" required min="1000" placeholder="Enter loan amount">
+            </div>
+
+            <div class="form-group">
+                <label>📅 Loan Term (Months):</label>
+                <select name="loan_term_month" id="loan_term_month">
+                    <option value="12">12 Months</option>
+                    <option value="24">24 Months</option>
+                    <option value="36" selected>36 Months</option>
+                    <option value="48">48 Months</option>
+                    <option value="60">60 Months</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>📊 Credit Score:</label>
+                <input type="number" name="credits_score" id="credits_score" required min="300" max="850" placeholder="Enter credit score (300-850)">
+            </div>
+
+            <div class="form-group">
+                <label>💼 Employment Years:</label>
+                <input type="number" name="employment_year" id="employment_year" required min="0" placeholder="Years of employment">
+            </div>
+
+            <div class="form-group">
+                <label>⚠️ Prior Default:</label>
+                <select name="prior_default" id="prior_default">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>💑 Marital Status:</label>
+                <select name="marital_status" id="marital_status">
+                    <option value="single">Single</option>
+                    <option value="married" selected>Married</option>
+                    <option value="divorced">Divorced</option>
+                    <option value="widowed">Widowed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>🎯 Loan Purpose:</label>
+                <select name="purpose" id="purpose">
+                    <option value="debt_consolidation">Debt Consolidation</option>
+                    <option value="home_improvement">Home Improvement</option>
+                    <option value="education">Education</option>
+                    <option value="car">Car</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <button type="submit">
+                <span style="position: relative; z-index: 1;">🔮 Predict Default Risk</span>
+            </button>
+        </form>
+
+        <div id="result" style="display: none;">
+            <!-- Result will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- POPUP -->
+    <div id="popup" class="modal-overlay">
+        <div class="modal-box" id="popup-content">
+            <!-- JS will insert result here -->
+        </div>
+    </div>
+
+    <script>
+        function handleSubmit(event) {
+        event.preventDefault();
+        
+        // Get form values
+        const age = parseInt(document.getElementById('age').value);
+        const income = parseFloat(document.getElementById('income').value);
+        const loanAmount = parseFloat(document.getElementById('loan_amount').value);
+        const creditScore = parseInt(document.getElementById('credits_score').value);
+        const employmentYear = parseInt(document.getElementById('employment_year').value);
+        const priorDefault = parseInt(document.getElementById('prior_default').value);
+        const maritalStatus = document.getElementById('marital_status').value;
+        const purpose = document.getElementById('purpose').value;
+
+        // Calculate default probability
+        const loanIncomeRatio = loanAmount / (income + 1);
+        const score = -3.0 * (creditScore - 650) / 100.0 +
+                        6.0 * loanIncomeRatio -
+                        0.2 * employmentYear +
+                        2.0 * priorDefault +
+                        (purpose === 'debt_consolidation' ? 0.5 : 0.0) +
+                        (maritalStatus === 'single' ? 0.1 : 0.0);
+
+        const probDefault = 1 / (1 + Math.exp(-score));
+        const probability = (probDefault * 100).toFixed(2);
+        const prediction = probDefault > 0.5 ? 'High Risk - Likely to Default' : 'Low Risk - Likely Approved';
+        const isApproved = probDefault <= 0.5;
+
+        // Insert content into popup
+        const popupContent = `
+            <div class="icon">${isApproved ? '✅' : '❌'}</div>
+            <h2>${prediction}</h2>
+            <p style="font-size: 1.2em;">Default Probability: <b>${probability}%</b></p>
+            <p style="margin-top: 10px; color: #555;">
+                ${isApproved 
+                    ? "You have a good chance of loan approval!" 
+                    : "Risk is high. Try reducing loan amount or improving credit score."}
+            </p>
+            <button class="close-btn" onclick="closePopup()">Close</button>
+        `;
+
+        document.getElementById("popup-content").innerHTML = popupContent;
+
+        // Show popup
+        document.getElementById("popup").style.display = "flex";
+    }
+
+    // Close popup function
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+    </script>
+</body>
+</html>
